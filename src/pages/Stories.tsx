@@ -24,7 +24,8 @@ const storiesData = [
     date: "2024-01-14",
     views: 3200,
     likes: 245,
-    category: "Traditional"
+    category: "Traditional",
+    image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=60"
   },
   {
     id: 2,
@@ -34,7 +35,8 @@ const storiesData = [
     date: "2024-01-11",
     views: 150,
     likes: 12,
-    category: "Coming of Age"
+    category: "Coming of Age",
+    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=60"
   },
   {
     id: 3,
@@ -44,7 +46,8 @@ const storiesData = [
     date: "2024-01-08",
     views: 5600,
     likes: 892,
-    category: "Folklore"
+    category: "Folklore",
+    image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=60"
   }
 ];
 
@@ -59,7 +62,8 @@ export default function Stories() {
   
   const filteredStories = storiesData.filter(story =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    story.category.toLowerCase().includes(searchTerm.toLowerCase())
+    story.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    story.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -96,8 +100,27 @@ export default function Stories() {
       {/* Stories Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredStories.map((story) => (
-          <Card key={story.id} className="bg-gradient-card shadow-elegant hover:shadow-glow transition-smooth group">
-            <CardHeader>
+          <Card key={story.id} className="bg-gradient-card shadow-elegant hover:shadow-glow transition-smooth group overflow-hidden">
+            {/* Image at top */}
+            <div className="w-full h-44 bg-muted/10 overflow-hidden">
+              {story.image ? (
+                <img
+                  src={story.image}
+                  alt={story.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect width='100%25' height='100%25' fill='%23F3F4F6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-size='20'%3EImage not available%3C/text%3E%3C/svg%3E";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  No image
+                </div>
+              )}
+            </div>
+
+            <CardHeader className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <Badge variant="secondary" className="text-xs">
                   {story.category}
@@ -113,6 +136,7 @@ export default function Stories() {
                 {story.excerpt}
               </CardDescription>
             </CardHeader>
+
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Eye, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import falconNewsImage from "@/assets/falcon-news.jpg";
 
@@ -19,24 +19,27 @@ export default function CreateNews() {
     excerpt: "",
     content: "",
     category: "",
-    status: "Draft"
+    status: "Draft",
+    image: null as File | null
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const categories = ["Conservation", "Events", "Culture", "Research", "Training"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.excerpt || !formData.content || !formData.category) {
+    if (!formData.title || !formData.excerpt || !formData.content || !formData.category || !formData.image) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields and upload an image.",
         variant: "destructive"
       });
       return;
     }
 
-    // Here you would typically save to your backend/database
+    // This is where you'd send `formData` to your backend (including the image)
+    // e.g. using FormData for file upload
     toast({
       title: "Success!",
       description: `News article "${formData.title}" has been ${formData.status.toLowerCase()}.`,
@@ -51,6 +54,14 @@ export default function CreateNews() {
       const event = new Event('submit', { bubbles: true, cancelable: true });
       document.querySelector('form')?.dispatchEvent(event);
     }, 100);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -72,19 +83,15 @@ export default function CreateNews() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate("/news")}
-            className="hover:bg-secondary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">{formData.status}</Badge>
-        </div>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate("/news")}
+          className="hover:bg-secondary"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Badge variant="secondary">{formData.status}</Badge>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -140,6 +147,26 @@ export default function CreateNews() {
                 <CardTitle className="text-foreground">Publication Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Image Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="image">Upload Image *</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="flex-1"
+                    />
+                    <ImagePlus className="text-muted-foreground" />
+                  </div>
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img src={imagePreview} alt="Preview" className="rounded-md w-full object-cover max-h-48" />
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
                   <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>

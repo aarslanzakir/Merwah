@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Eye, BookOpen } from "lucide-react";
+import { ArrowLeft, Save, Eye, BookOpen, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import falconStoryImage from "@/assets/falcon-story.jpg";
 
@@ -19,24 +19,26 @@ export default function CreateStory() {
     excerpt: "",
     content: "",
     category: "",
-    status: "Draft"
+    status: "Draft",
+    image: null as File | null
   });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const categories = ["Traditional", "Coming of Age", "Folklore", "Adventure", "Historical", "Modern"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.excerpt || !formData.content || !formData.category) {
+    if (!formData.title || !formData.excerpt || !formData.content || !formData.category || !formData.image) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields and choose an image.",
         variant: "destructive"
       });
       return;
     }
 
-    // Here you would typically save to your backend/database
+    // TODO: send `formData` to your backend. Use FormData for file upload.
     toast({
       title: "Success!",
       description: `Story "${formData.title}" has been ${formData.status.toLowerCase()}.`,
@@ -51,6 +53,17 @@ export default function CreateStory() {
       const event = new Event('submit', { bubbles: true, cancelable: true });
       document.querySelector('form')?.dispatchEvent(event);
     }, 100);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      setFormData(prev => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setFormData(prev => ({ ...prev, image: null }));
+      setImagePreview(null);
+    }
   };
 
   return (
@@ -143,6 +156,30 @@ export default function CreateStory() {
                 <CardTitle className="text-foreground">Story Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Image Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="image">Choose Image *</Label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="flex-1 text-sm"
+                    />
+                    <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  {imagePreview ? (
+                    <div className="mt-2 rounded-md overflow-hidden border">
+                      <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
+                    </div>
+                  ) : (
+                    <div className="mt-2 rounded-md h-40 w-full flex items-center justify-center bg-muted/10 text-muted-foreground">
+                      No image selected
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="category">Story Category *</Label>
                   <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
