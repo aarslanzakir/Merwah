@@ -25,6 +25,8 @@ const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "News", url: "/news", icon: Newspaper },
   { title: "Stories", url: "/stories", icon: BookOpen },
+    { title: "Falcons", url: "/falcons", icon: BookOpen },
+
   { title: "Fatwas", url: "/fatwas", icon: ScrollText },
 ];
 

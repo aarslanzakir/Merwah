@@ -12,6 +12,8 @@ import CreateNews from "./pages/CreateNews";
 import CreateStory from "./pages/CreateStory";
 import CreateFatwa from "./pages/CreateFatwa";
 import NotFound from "./pages/NotFound";
+import Falcons from "./pages/Falcons";
+import CreateFalcons from "./pages/CreateFalcons";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +31,11 @@ const App = () => (
             <Route path="/stories" element={<Stories />} />
             <Route path="/stories/new" element={<CreateStory />} />
             <Route path="/fatwas" element={<Fatwas />} />
+            <Route path="/falcons" element={<Falcons />} />
+         <Route path="/falcons/new" element={<CreateFalcons />} />
+
             <Route path="/fatwas/new" element={<CreateFatwa />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
